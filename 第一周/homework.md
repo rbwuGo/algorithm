@@ -75,8 +75,10 @@ func mergeTwoLists(l1 *ListNode, l2 *ListNode) *ListNode {
 
 ##### 题目：(3)设计循环双端队列
 ##### 链接：https://leetcode-cn.com/problems/design-circular-deque/
-##### 语言：Python
+##### 语言：Python,Go
 ```python
+## python实现
+
 class MyCircularDeque(object):
 
     def __init__(self, k):
@@ -157,4 +159,114 @@ class MyCircularDeque(object):
         return self.size >= self.limit_size
 
 ```
+
+```go
+## go实现
+
+type Node struct {
+    val int
+    prev *Node
+    next *Node
+}
+
+type MyCircularDeque struct {
+    head *Node
+    size int
+    limit_size int
+}
+
+func getLastNode(head *Node) *Node {
+    last := head
+    for last.next != nil {
+        last =  last.next
+    }
+    return last
+}
+
+func Constructor(k int) MyCircularDeque {
+    return MyCircularDeque{
+        size: 0,
+        limit_size: k,
+    }
+}
+
+func (this *MyCircularDeque) InsertFront(value int) bool {
+    if this.IsFull() { return false }
+    newNode := &Node{val: value}
+    if this.IsEmpty() {
+        this.head = newNode
+    } else {
+        head := this.head
+        newNode.next = head
+        head.prev = newNode
+        this.head = newNode
+    }
+    this.size ++
+    return true
+}
+
+func (this *MyCircularDeque) InsertLast(value int) bool {
+    if this.IsFull() { return false }
+    newNode := &Node{val: value}
+    if this.IsEmpty() {
+        this.head = newNode
+    } else {
+        lastNode := getLastNode(this.head)
+        newNode.prev = lastNode
+        lastNode.next = newNode
+    }
+    this.size ++
+    return true
+}
+
+func (this *MyCircularDeque) DeleteFront() bool {
+    if this.IsEmpty() { return false }
+    if this.size == 1 { this.head = nil } else {
+        next := this.head.next
+        this.head.next = nil
+        next.prev = nil
+        this.head = next
+    }
+    this.size --
+    return true
+}
+
+func (this *MyCircularDeque) DeleteLast() bool {
+    if this.IsEmpty() { return false }
+    if this.size == 1 { this.head = nil } else {
+        last := getLastNode(this.head)
+        prev := last.prev
+        last.prev = nil
+        prev.next = nil
+    }
+    this.size --
+    return true
+}
+
+func (this *MyCircularDeque) GetFront() int {
+    if this.IsEmpty() { return -1 }
+    head := this.head
+    return head.val
+}
+
+func (this *MyCircularDeque) GetRear() int {
+    if this.IsEmpty() { return -1 }
+    last := getLastNode(this.head)
+    return last.val
+}
+
+
+func (this *MyCircularDeque) IsEmpty() bool {
+    if this.size == 0 { return true }
+    return false
+}
+
+func (this *MyCircularDeque) IsFull() bool {
+    if this.size >= this.limit_size { return true }
+    return false
+}
+
+```
+
+
 
